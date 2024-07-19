@@ -5,9 +5,10 @@ import { deleteBook, toggleFavorite } from '../../redux/books/actionCreators'
 import {
   selectTitleFilter,
   selectAuthorFilter,
+  selectIsFavoriteFilter,
 } from '../../redux/slices/filterSlice'
 
-const filterBooks = (books, titleFilter, authorFilter) => {
+const filterBooks = (books, titleFilter, authorFilter, isFavoriteFilter) => {
   const booksFilter = books.filter((book) => {
     const matchedTitle = book.title
       .toLowerCase()
@@ -17,7 +18,9 @@ const filterBooks = (books, titleFilter, authorFilter) => {
       .toLowerCase()
       .includes(authorFilter.toLowerCase())
 
-    return matchedTitle && matchedAuthor
+    const matchesFavorite = isFavoriteFilter ? book.isFavorite : true
+
+    return matchedTitle && matchedAuthor && matchesFavorite
   })
 
   return booksFilter
@@ -27,8 +30,14 @@ const BookList = () => {
   const books = useSelector((state) => state.books)
   const titleFilter = useSelector(selectTitleFilter)
   const authorFilter = useSelector(selectAuthorFilter)
+  const isFavoriteFilter = useSelector(selectIsFavoriteFilter)
 
-  const filteredBooks = filterBooks(books, titleFilter, authorFilter)
+  const filteredBooks = filterBooks(
+    books,
+    titleFilter,
+    authorFilter,
+    isFavoriteFilter
+  )
 
   const dispatch = useDispatch()
 

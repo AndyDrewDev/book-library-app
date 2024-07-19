@@ -41,6 +41,23 @@ const BookList = () => {
 
   const dispatch = useDispatch()
 
+  const highlightMatchedText = (text, filter) => {
+    if (!filter) {
+      return text
+    }
+    const regex = new RegExp(`(${filter})`, 'gi')
+    return text.split(regex).map((substring, i) => {
+      if (substring.toLowerCase() === filter.toLowerCase()) {
+        return (
+          <span key={i} className='highlight'>
+            {substring}
+          </span>
+        )
+      }
+      return substring
+    })
+  }
+
   return (
     <div className='app-block book-list'>
       <h2>Book List</h2>
@@ -57,7 +74,10 @@ const BookList = () => {
             return (
               <li key={book.id}>
                 <div className='book-info'>
-                  {++i}. {book.title} by <strong>{book.author}</strong>
+                  {++i}. {highlightMatchedText(book.title, titleFilter)} by{' '}
+                  <strong>
+                    {highlightMatchedText(book.author, authorFilter)}
+                  </strong>
                 </div>
 
                 <div className='book-actions'>

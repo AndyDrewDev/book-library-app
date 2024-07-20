@@ -1,5 +1,5 @@
-const createBookWithId = (book) => {
-  return { ...book, id: crypto.randomUUID(), isFavorite: false }
+const createBookWithId = (book, source) => {
+  return { ...book, source, id: crypto.randomUUID(), isFavorite: false }
 }
 
 export default createBookWithId

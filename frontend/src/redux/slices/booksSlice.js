@@ -7,9 +7,13 @@ const initialState = {
   errorMsg: '',
 }
 
-export const fetchBook = createAsyncThunk('books/fetchBook', async () => {
-  const res = await axios.get('http://localhost:5000/random-book')
-  return res.data
+export const fetchBook = createAsyncThunk('books/fetchBook', async (url) => {
+  try {
+    const res = await axios.get(url)
+    return res.data
+  } catch (error) {
+    throw error
+  }
 })
 
 const booksSlice = createSlice({

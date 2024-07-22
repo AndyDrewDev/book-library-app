@@ -19,7 +19,7 @@ const BookForm = () => {
   }
 
   const handleRandomBookFromApi = () => {
-    dispatch(fetchBook())
+    dispatch(fetchBook('http://localhost:4000/random-book'))
   }
 
   const handleSubmit = (event) => {

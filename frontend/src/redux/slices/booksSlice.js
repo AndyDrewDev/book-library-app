@@ -29,6 +29,12 @@ const booksSlice = createSlice({
         }
       })
     },
+    setError: (state, action) => {
+      state.errorMsg = action.payload
+    },
+    clearError: (state) => {
+      state.errorMsg = ''
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchBook.fulfilled, (state, action) => {
@@ -43,8 +49,11 @@ const booksSlice = createSlice({
   },
 })
 
-export const { addBook, deleteBook, toggleFavorite } = booksSlice.actions
+export const { addBook, deleteBook, toggleFavorite, setError, clearError } =
+  booksSlice.actions
 
 export const selectBooks = (state) => state.books.books
+
+export const selectErrorMsg = (state) => state.books.errorMsg
 
 export default booksSlice.reducer

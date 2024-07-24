@@ -4,6 +4,7 @@ import createBookWithId from '../../utils/createBookWithId'
 
 const initialState = {
   books: [],
+  isLoadingFromAPI: false,
   errorMsg: '',
 }
 
@@ -24,7 +25,10 @@ const booksSlice = createSlice({
       state.books.push(action.payload)
     },
     deleteBook: (state, action) => {
-      state.books = state.books.filter((book) => book.id !== action.payload)
+      return {
+        ...state,
+        books: state.books.filter((book) => book.id !== action.payload),
+      }
     },
     toggleFavorite: (state, action) => {
       state.books.forEach((book) => {
@@ -41,15 +45,22 @@ const booksSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(fetchBook.pending, (state) => {
+      state.isLoadingFromAPI = true
+    })
+
     builder.addCase(fetchBook.fulfilled, (state, action) => {
-      if (action.payload.title && action.payload.author) {
+      state.isLoadingFromAPI = false
+      if (action?.payload?.title && action?.payload?.author) {
         state.books.push(createBookWithId(action.payload, 'API'))
       }
     })
 
     builder.addCase(fetchBook.rejected, (state, action) => {
+      state.isLoadingFromAPI = false
       state.errorMsg = action.error.message
     })
+
   },
 })
 
@@ -59,5 +70,7 @@ export const { addBook, deleteBook, toggleFavorite, setError, clearError } =
 export const selectBooks = (state) => state.books.books
 
 export const selectErrorMsg = (state) => state.books.errorMsg
+
+export const selectIsLoadingFromAPI = (state) => state.books.isLoadingFromAPI
 
 export default booksSlice.reducer

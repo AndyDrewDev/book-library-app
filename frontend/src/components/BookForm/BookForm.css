@@ -8,6 +8,10 @@
   text-align: center;
   margin-bottom: 10px;
 }
+.book-form label div {
+  display: block;
+  margin-bottom: 5px;
+}
 
 .book-form input {
   width: 80%;

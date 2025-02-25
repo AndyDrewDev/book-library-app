@@ -46,7 +46,7 @@ const BookForm = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor='title'>
-            Title:
+            <div>Title:</div>
             <input
               type='text'
               id='title'
@@ -57,7 +57,7 @@ const BookForm = () => {
         </div>
         <div>
           <label htmlFor='author'>
-            Author:
+            <div>Author:</div>
             <input
               type='text'
               id='author'

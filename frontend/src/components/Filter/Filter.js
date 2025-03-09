@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
+import { useCallback, memo } from 'react'
 import {
   setTitleFilter,
   setAuthorFilter,
@@ -16,21 +17,27 @@ const Filter = () => {
   const authorFilter = useSelector(selectAuthorFilter)
   const isFavoriteFilter = useSelector(selectIsFavoriteFilter)
 
-  const handleTitleFilterChange = (event) => {
-    dispatch(setTitleFilter(event.target.value))
-  }
+  const handleTitleFilterChange = useCallback(
+    (event) => {
+      dispatch(setTitleFilter(event.target.value))
+    },
+    [dispatch]
+  )
 
-  const handleAuthorFilterChange = (event) => {
-    dispatch(setAuthorFilter(event.target.value))
-  }
+  const handleAuthorFilterChange = useCallback(
+    (event) => {
+      dispatch(setAuthorFilter(event.target.value))
+    },
+    [dispatch]
+  )
 
-  const handleIsFavoriteFilterChange = () => {
+  const handleIsFavoriteFilterChange = useCallback(() => {
     dispatch(setIsFavoriteFilter())
-  }
+  }, [dispatch])
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     dispatch(resetFilters())
-  }
+  }, [dispatch])
 
   return (
     <div className='app-block filter'>
@@ -69,4 +76,4 @@ const Filter = () => {
   )
 }
 
-export default Filter
+export default memo(Filter)

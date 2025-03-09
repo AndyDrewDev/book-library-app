@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
 import axios from 'axios'
 import createBookWithId from '../../utils/createBookWithId'
 
@@ -8,14 +8,17 @@ const initialState = {
   errorMsg: '',
 }
 
-export const fetchBook = createAsyncThunk('books/fetchBook', async (url) => {
-  try {
-    const res = await axios.get(url)
-    return res.data
-  } catch (error) {
-    throw error
+export const fetchBook = createAsyncThunk(
+  'books/fetchBook',
+  async (url, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(url)
+      return res.data
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
   }
-})
+)
 
 const booksSlice = createSlice({
   name: 'books',
@@ -45,32 +48,44 @@ const booksSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchBook.pending, (state) => {
-      state.isLoadingFromAPI = true
-    })
-
-    builder.addCase(fetchBook.fulfilled, (state, action) => {
-      state.isLoadingFromAPI = false
-      if (action?.payload?.title && action?.payload?.author) {
-        state.books.push(createBookWithId(action.payload, 'API'))
-      }
-    })
-
-    builder.addCase(fetchBook.rejected, (state, action) => {
-      state.isLoadingFromAPI = false
-      state.errorMsg = action.error.message
-    })
-
+    builder
+      .addCase(fetchBook.pending, (state) => {
+        state.isLoadingFromAPI = true
+        state.errorMsg = ''
+      })
+      .addCase(fetchBook.fulfilled, (state, action) => {
+        state.isLoadingFromAPI = false
+        if (action?.payload?.title && action?.payload?.author) {
+          state.books.push(createBookWithId(action.payload, 'API'))
+        }
+      })
+      .addCase(fetchBook.rejected, (state, action) => {
+        state.isLoadingFromAPI = false
+        state.errorMsg = action.payload || 'Failed to fetch book from API'
+      })
   },
 })
 
 export const { addBook, deleteBook, toggleFavorite, setError, clearError } =
   booksSlice.actions
 
-export const selectBooks = (state) => state.books.books
+// Базовий селектор
+const selectBooksState = (state) => state.books
 
-export const selectErrorMsg = (state) => state.books.errorMsg
+// Мемоізовані селектори з використанням createSelector
+export const selectBooks = createSelector(
+  [selectBooksState],
+  (booksState) => booksState.books
+)
 
-export const selectIsLoadingFromAPI = (state) => state.books.isLoadingFromAPI
+export const selectErrorMsg = createSelector(
+  [selectBooksState],
+  (booksState) => booksState.errorMsg
+)
+
+export const selectIsLoadingFromAPI = createSelector(
+  [selectBooksState],
+  (booksState) => booksState.isLoadingFromAPI
+)
 
 export default booksSlice.reducer

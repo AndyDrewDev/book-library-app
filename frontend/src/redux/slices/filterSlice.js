@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createSelector } from '@reduxjs/toolkit'
 
 const initialState = {
   title: '',
@@ -32,8 +32,23 @@ export const {
   resetFilters,
 } = filterSlice.actions
 
-export const selectTitleFilter = (state) => state.filter.title
-export const selectAuthorFilter = (state) => state.filter.author
-export const selectIsFavoriteFilter = (state) => state.filter.isFavorite
+// Базовий селектор
+const selectFilterState = (state) => state.filter
+
+// Мемоізовані селектори
+export const selectTitleFilter = createSelector(
+  [selectFilterState],
+  (filterState) => filterState.title
+)
+
+export const selectAuthorFilter = createSelector(
+  [selectFilterState],
+  (filterState) => filterState.author
+)
+
+export const selectIsFavoriteFilter = createSelector(
+  [selectFilterState],
+  (filterState) => filterState.isFavorite
+)
 
 export default filterSlice.reducer

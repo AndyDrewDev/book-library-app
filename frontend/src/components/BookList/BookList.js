@@ -1,6 +1,7 @@
 import './BookList.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { BsBookmarkStarFill, BsBookmarkStar } from 'react-icons/bs'
+import { useCallback, useMemo, memo } from 'react'
 import {
   deleteBook,
   toggleFavorite,
@@ -13,7 +14,7 @@ import {
 } from '../../redux/slices/filterSlice'
 
 const filterBooks = (books, titleFilter, authorFilter, isFavoriteFilter) => {
-  const booksFilter = books.filter((book) => {
+  return books.filter((book) => {
     const matchedTitle = book.title
       .toLowerCase()
       .includes(titleFilter.toLowerCase())
@@ -26,26 +27,20 @@ const filterBooks = (books, titleFilter, authorFilter, isFavoriteFilter) => {
 
     return matchedTitle && matchedAuthor && matchesFavorite
   })
-
-  return booksFilter
 }
 
-const BookList = () => {
-  const books = useSelector(selectBooks)
-  const titleFilter = useSelector(selectTitleFilter)
-  const authorFilter = useSelector(selectAuthorFilter)
-  const isFavoriteFilter = useSelector(selectIsFavoriteFilter)
-
-  const filteredBooks = filterBooks(
-    books,
-    titleFilter,
-    authorFilter,
-    isFavoriteFilter
-  )
-
+const BookItem = memo(({ book, index, titleFilter, authorFilter }) => {
   const dispatch = useDispatch()
 
-  const highlightMatchedText = (text, filter) => {
+  const handleDeleteBook = useCallback(() => {
+    dispatch(deleteBook(book.id))
+  }, [dispatch, book.id])
+
+  const handleToggleFavorite = useCallback(() => {
+    dispatch(toggleFavorite(book.id))
+  }, [dispatch, book.id])
+
+  const highlightMatchedText = useCallback((text, filter) => {
     if (!filter) {
       return text
     }
@@ -60,7 +55,40 @@ const BookList = () => {
       }
       return substring
     })
-  }
+  }, [])
+
+  return (
+    <li>
+      <div className='book-info'>
+        {index}. {highlightMatchedText(book.title, titleFilter)} by{' '}
+        <strong>{highlightMatchedText(book.author, authorFilter)}</strong> (
+        {book.source})
+      </div>
+
+      <div className='book-actions'>
+        <span onClick={handleToggleFavorite}>
+          {book.isFavorite ? (
+            <BsBookmarkStarFill className='star-icon' />
+          ) : (
+            <BsBookmarkStar className='star-icon' />
+          )}
+        </span>
+        <button onClick={handleDeleteBook}>Delete</button>
+      </div>
+    </li>
+  )
+})
+
+const BookList = () => {
+  const books = useSelector(selectBooks)
+  const titleFilter = useSelector(selectTitleFilter)
+  const authorFilter = useSelector(selectAuthorFilter)
+  const isFavoriteFilter = useSelector(selectIsFavoriteFilter)
+
+  const filteredBooks = useMemo(
+    () => filterBooks(books, titleFilter, authorFilter, isFavoriteFilter),
+    [books, titleFilter, authorFilter, isFavoriteFilter]
+  )
 
   return (
     <div className='app-block book-list'>
@@ -69,39 +97,19 @@ const BookList = () => {
         <p>No books available</p>
       ) : (
         <ul>
-          {filteredBooks.map((book, i) => {
-            const handleDeleteBook = (id) => dispatch(deleteBook(book.id))
-
-            const handleToggleFavorite = (id) =>
-              dispatch(toggleFavorite(book.id))
-
-            return (
-              <li key={book.id}>
-                <div className='book-info'>
-                  {++i}. {highlightMatchedText(book.title, titleFilter)} by{' '}
-                  <strong>
-                    {highlightMatchedText(book.author, authorFilter)}
-                  </strong>{' '}
-                  ({book.source})
-                </div>
-
-                <div className='book-actions'>
-                  <span onClick={handleToggleFavorite}>
-                    {book.isFavorite ? (
-                      <BsBookmarkStarFill className='star-icon' />
-                    ) : (
-                      <BsBookmarkStar className='star-icon' />
-                    )}
-                  </span>
-                  <button onClick={handleDeleteBook}>Delete</button>
-                </div>
-              </li>
-            )
-          })}
+          {filteredBooks.map((book, i) => (
+            <BookItem
+              key={book.id}
+              book={book}
+              index={i + 1}
+              titleFilter={titleFilter}
+              authorFilter={authorFilter}
+            />
+          ))}
         </ul>
       )}
     </div>
   )
 }
 
-export default BookList
+export default memo(BookList)

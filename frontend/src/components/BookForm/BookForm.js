@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FaSpinner } from 'react-icons/fa'
 import {
@@ -17,28 +17,40 @@ const BookForm = () => {
   const isLoadingFromAPI = useSelector(selectIsLoadingFromAPI)
   const dispatch = useDispatch()
 
-  const handleAddRandomBook = () => {
+  const handleAddRandomBook = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * booksData.length)
     const randomBook = booksData[randomIndex]
 
     dispatch(addBook(createBookWithId(randomBook, 'random')))
-  }
+  }, [dispatch])
 
-  const handleRandomBookFromApi = () => {
+  const handleRandomBookFromApi = useCallback(() => {
     dispatch(fetchBook('http://localhost:4000/random-book-deleyed'))
-  }
+  }, [dispatch])
 
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    if (title && author) {
-      dispatch(addBook(createBookWithId({ title, author }, 'manual')))
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault()
+      if (title && author) {
+        dispatch(addBook(createBookWithId({ title, author }, 'manual')))
 
-      setTitle('')
-      setAuthor('')
-    } else {
-      dispatch(setError('Please enter a title and author'))
-    }
-  }
+        setTitle('')
+        setAuthor('')
+      } else {
+        dispatch(setError('Please enter a title and author'))
+      }
+    },
+    [title, author, dispatch]
+  )
+
+  const handleTitleChange = useCallback((event) => {
+    setTitle(event.target.value)
+  }, [])
+
+  const handleAuthorChange = useCallback((event) => {
+    setAuthor(event.target.value)
+  }, [])
+
   return (
     <div className='app-block book-form'>
       <h2>Add a New Book </h2>
@@ -51,7 +63,7 @@ const BookForm = () => {
               type='text'
               id='title'
               value={title}
-              onChange={(event) => setTitle(event.target.value)}
+              onChange={handleTitleChange}
             />
           </label>
         </div>
@@ -62,7 +74,7 @@ const BookForm = () => {
               type='text'
               id='author'
               value={author}
-              onChange={(event) => setAuthor(event.target.value)}
+              onChange={handleAuthorChange}
             />
           </label>
         </div>
@@ -89,4 +101,4 @@ const BookForm = () => {
   )
 }
 
-export default BookForm
+export default memo(BookForm)

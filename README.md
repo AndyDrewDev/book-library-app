@@ -11,6 +11,7 @@ An application for managing your personal book library with the ability to add, 
 - Persisting application state between sessions using Redux Persist
 - Error handling and notification display
 - Filtering and sorting books
+- Serverless backend with Netlify Functions
 
 ## Project Structure
 
@@ -76,6 +77,8 @@ book-library-app/
 - `/.netlify/functions/random-book` - returns a random book
 - `/.netlify/functions/random-book-delayed` - returns a random book with a 2-second delay
 
+Note: The redirects in netlify.toml handle mapping from `/api/*` to `/.netlify/functions/*`
+
 ## Local Development
 
 For local development, you can use Netlify CLI:
@@ -132,6 +135,7 @@ netlify deploy --prod
 
 ### Backend
 
+- Netlify Functions (Serverless)
 - Node.js
 - Express.js
 - CORS for cross-domain requests

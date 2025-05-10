@@ -25,7 +25,7 @@ const BookForm = () => {
   }, [dispatch])
 
   const handleRandomBookFromApi = useCallback(() => {
-    dispatch(fetchBook('api/random-book-delayed'))
+    dispatch(fetchBook('/api/random-book-delayed'))
   }, [dispatch])
 
   const handleSubmit = useCallback(

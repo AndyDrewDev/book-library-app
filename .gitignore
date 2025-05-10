@@ -28,3 +28,5 @@ frontend/.DS_Store
 
 # Exclude core tsconfig for IDE
 package-lock.json
+# Local Netlify folder
+.netlify

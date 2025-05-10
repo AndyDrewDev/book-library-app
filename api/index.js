@@ -16,7 +16,7 @@ app.get('/random-book', (req, res) => {
   res.json(getRandomBook())
 })
 
-app.get('/random-book-deleyed', (req, res) => {
+app.get('/random-book-delayed', (req, res) => {
   setTimeout(() => res.json(getRandomBook()), 2000)
 })
 

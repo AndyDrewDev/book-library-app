@@ -6,7 +6,7 @@ An application for managing your personal book library with the ability to add, 
 
 ## Project Features
 
-- Using Redux for application state management
+- Using Redux/Toolkit for application state management
 - Asynchronous API requests using createAsyncThunk
 - Persisting application state between sessions using Redux Persist
 - Error handling and notification display
